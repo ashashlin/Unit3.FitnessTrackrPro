@@ -36,11 +36,11 @@ function ActivityListItem({ activity }) {
     <Link to={`/activities/${activity.id}`}>
       <li>
         <p>{activity.name}</p>
-        {token && (
+        {/* {token && (
           <button onClick={() => deleteActivity()}>
             {loading ? "Deleting" : error ? error : "Delete"}
           </button>
-        )}
+        )} */}
       </li>
     </Link>
   );
