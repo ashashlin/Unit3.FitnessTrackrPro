@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import useQuery from "../api/useQuery";
-import { useAuth } from "../auth/AuthContext";
 import useMutation from "../api/useMutation";
+import { useAuth } from "../auth/AuthContext";
 
 export default function RoutineDetails() {
   const { routineId } = useParams();
@@ -52,6 +52,8 @@ export default function RoutineDetails() {
           ))}
         </ul>
       )}
+
+      {token && <SetForm routine={routine} />}
     </>
   );
 }
@@ -79,5 +81,46 @@ function SetListItem({ set }) {
         </button>
       )}
     </li>
+  );
+}
+
+function SetForm({ routine }) {
+  const { data: activities } = useQuery("/activities", "activities");
+
+  const {
+    mutate: add,
+    loading: isLoading,
+    error: addError,
+  } = useMutation("POST", "/sets", ["routine"]);
+
+  const addSet = (formData) => {
+    const activityId = formData.get("activityId");
+    const count = formData.get("count");
+    const routineId = routine.id;
+    add({ activityId, routineId, count });
+  };
+
+  return (
+    <>
+      <h2>Add a set</h2>
+      <form action={addSet}>
+        <label>
+          Activity
+          <select name="activityId">
+            {activities?.map((activity) => (
+              <option key={activity.id} value={activity.id}>
+                {activity.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Count
+          <input type="number" name="count" min={1} />
+        </label>
+        <button>{isLoading ? "Adding..." : "Add set"}</button>
+        {addError && <output>{addError}</output>}
+      </form>
+    </>
   );
 }
