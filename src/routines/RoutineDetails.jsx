@@ -41,6 +41,43 @@ export default function RoutineDetails() {
             : "Delete routine"}
         </button>
       )}
+
+      <h3>Sets</h3>
+      {routine.sets.length === 0 ? (
+        <p>This routine doesn't have any sets. Add one?</p>
+      ) : (
+        <ul className="routine-sets">
+          {routine?.sets?.map((set) => (
+            <SetListItem key={set.id} set={set} />
+          ))}
+        </ul>
+      )}
     </>
+  );
+}
+
+function SetListItem({ set }) {
+  const { token } = useAuth();
+  const {
+    mutate: deleteSet,
+    loading: isLoading,
+    error: deleteError,
+  } = useMutation("DELETE", `/sets/${set.id}`, ["routine"]);
+
+  return (
+    <li>
+      <p>
+        {set.name} x {set.count}
+      </p>
+      {token && (
+        <button
+          onClick={() => {
+            deleteSet();
+          }}
+        >
+          {isLoading ? "Deleting" : deleteError ? deleteError : "Delete set"}
+        </button>
+      )}
+    </li>
   );
 }
